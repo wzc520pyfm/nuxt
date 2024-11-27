@@ -1,5 +1,4 @@
-import type { Literal, Property, SpreadElement } from 'estree'
-import { transform } from 'esbuild'
+import type { ObjectProperty, SpreadElement, StringLiteral } from 'oxc-parser'
 import { defu } from 'defu'
 import { findExports } from 'mlly'
 import type { Nuxt } from '@nuxt/schema'
@@ -8,7 +7,7 @@ import MagicString from 'magic-string'
 import { normalize } from 'pathe'
 import { logger } from '@nuxt/kit'
 
-import { parseAndWalk, withLocations } from '../../core/utils/parse'
+import { parseAndWalk } from '../../core/utils/parse'
 
 import type { ObjectPlugin, PluginMeta } from '#app'
 
@@ -40,13 +39,12 @@ export const orderMap: Record<NonNullable<ObjectPlugin['enforce']>, number> = {
 }
 
 const metaCache: Record<string, Omit<PluginMeta, 'enforce'>> = {}
-export async function extractMetadata (code: string, loader = 'ts' as 'ts' | 'tsx') {
+export function extractMetadata (code: string, id: string) {
   let meta: PluginMeta = {}
   if (metaCache[code]) {
     return metaCache[code]
   }
-  const js = await transform(code, { loader })
-  parseAndWalk(js.code, `file.${loader}`, (node) => {
+  parseAndWalk(code, id, (node) => {
     if (node.type !== 'CallExpression' || node.callee.type !== 'Identifier') { return }
 
     const name = 'name' in node.callee && node.callee.name
@@ -87,7 +85,7 @@ function isMetadataKey (key: string): key is PluginMetaKey {
   return key in keys
 }
 
-function extractMetaFromObject (properties: Array<Property | SpreadElement>) {
+function extractMetaFromObject (properties: Array<ObjectProperty | SpreadElement>) {
   const meta: PluginMeta = {}
   for (const property of properties) {
     if (property.type === 'SpreadElement' || !('name' in property.key)) {
@@ -105,7 +103,7 @@ function extractMetaFromObject (properties: Array<Property | SpreadElement>) {
       if (property.value.elements.some(e => !e || e.type !== 'Literal' || typeof e.value !== 'string')) {
         throw new Error('dependsOn must take an array of string literals')
       }
-      meta[propertyKey] = property.value.elements.map(e => (e as Literal)!.value as string)
+      meta[propertyKey] = property.value.elements.map(e => (e as StringLiteral)!.value as string)
     }
   }
   return meta
@@ -163,10 +161,11 @@ export const RemovePluginMetadataPlugin = (nuxt: Nuxt) => createUnplugin(() => {
 
               const propertyKey = property.key.name
               if (propertyKey === 'order' || propertyKey === 'enforce' || propertyKey === 'name') {
-                const nextNode = arg.properties[propertyIndex + 1] || node.arguments[argIndex + 1]
-                const nextIndex = withLocations(nextNode)?.start || (withLocations(arg).end - 1)
+                const _nextNode = arg.properties[propertyIndex + 1] || node.arguments[argIndex + 1]
+                const nextNode = _nextNode as typeof _nextNode & { start: number, end: number }
+                const nextIndex = nextNode?.start || (arg.end - 1)
 
-                s.remove(withLocations(property).start, nextIndex)
+                s.remove(property.start, nextIndex)
               }
             }
           }
