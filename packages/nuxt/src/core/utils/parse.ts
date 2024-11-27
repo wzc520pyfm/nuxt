@@ -7,9 +7,7 @@ import type { Node as ESTreeNode, Program as ESTreeProgram, ModuleSpecifier } fr
 /** estree also has AssignmentProperty, Identifier and Literal as possible node types */
 export type Node = Declaration | Expression | ClassBody | CatchClause | MethodDefinition | ModuleDeclaration | ModuleSpecifier | Pattern | PrivateIdentifier | Program | SpreadElement | Statement | Super | SwitchCase | TemplateElement | ObjectProperty | PropertyDefinition
 
-type InferThis<T extends (...args: any[]) => any> = T extends (this: infer U, ...args: infer A) => any ? U : unknown
-
-type WalkerCallback = (this: InferThis<SyncHandler>, node: Node, parent: Node | null, ctx: { key: string | number | symbol | null | undefined, index: number | null | undefined, ast: Program | Node }) => void
+type WalkerCallback = (this: ThisParameterType<SyncHandler>, node: Node, parent: Node | null, ctx: { key: string | number | symbol | null | undefined, index: number | null | undefined, ast: Program | Node }) => void
 
 export function walk (ast: Program | Node, callback: { enter?: WalkerCallback, leave?: WalkerCallback }) {
   return _walk(ast as unknown as ESTreeProgram | ESTreeNode, {
