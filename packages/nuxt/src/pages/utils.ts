@@ -9,8 +9,8 @@ import { filename } from 'pathe/utils'
 import { hash } from 'ohash'
 import type { ObjectProperty } from 'oxc-parser'
 import type { NuxtPage } from 'nuxt/schema'
+import { parseAndWalk } from 'oxc-walker'
 
-import { parseAndWalk } from '../core/utils/parse'
 import { getLoader, uniqueBy } from '../core/utils'
 import { toArray } from '../utils'
 

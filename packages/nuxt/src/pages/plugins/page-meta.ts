@@ -6,8 +6,7 @@ import { findExports, findStaticImports, parseStaticImport } from 'mlly'
 import MagicString from 'magic-string'
 import { isAbsolute } from 'pathe'
 import { logger } from '@nuxt/kit'
-
-import { parseAndWalk, walk } from '../../core/utils/parse'
+import { parseAndWalk, walk } from 'oxc-walker'
 
 interface PageMetaPluginOptions {
   dev?: boolean

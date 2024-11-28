@@ -7,9 +7,9 @@ import { parseQuery, parseURL } from 'ufo'
 import escapeRE from 'escape-string-regexp'
 import { findStaticImports, parseStaticImport } from 'mlly'
 import type { BindingPattern } from 'oxc-parser'
+import { parseAndWalk, walk } from 'oxc-walker'
 
 import { matchWithStringOrRegex } from '../utils/plugins'
-import { parseAndWalk, walk } from '../utils/parse'
 
 interface ComposableKeysOptions {
   sourcemap: boolean

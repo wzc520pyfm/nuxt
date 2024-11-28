@@ -5,9 +5,9 @@ import type { BindingPattern, BindingProperty, BindingRestElement, CallExpressio
 import { createUnplugin } from 'unplugin'
 import type { Component } from '@nuxt/schema'
 import { resolve } from 'pathe'
+import { parseAndWalk, walk } from 'oxc-walker'
+import type { Node } from 'oxc-walker'
 
-import { parseAndWalk, walk } from '../../core/utils/parse'
-import type { Node } from '../../core/utils/parse'
 import { distDir } from '../../dirs'
 
 interface TreeShakeTemplatePluginOptions {

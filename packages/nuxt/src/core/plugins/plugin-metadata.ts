@@ -6,8 +6,7 @@ import { createUnplugin } from 'unplugin'
 import MagicString from 'magic-string'
 import { normalize } from 'pathe'
 import { logger } from '@nuxt/kit'
-
-import { parseAndWalk } from '../../core/utils/parse'
+import { parseAndWalk } from 'oxc-walker'
 
 import type { ObjectPlugin, PluginMeta } from '#app'
 
