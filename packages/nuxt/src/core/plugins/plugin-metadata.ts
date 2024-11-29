@@ -160,8 +160,7 @@ export const RemovePluginMetadataPlugin = (nuxt: Nuxt) => createUnplugin(() => {
 
               const propertyKey = property.key.name
               if (propertyKey === 'order' || propertyKey === 'enforce' || propertyKey === 'name') {
-                const _nextNode = arg.properties[propertyIndex + 1] || node.arguments[argIndex + 1]
-                const nextNode = _nextNode as typeof _nextNode & { start: number, end: number }
+                const nextNode = arg.properties[propertyIndex + 1] || node.arguments[argIndex + 1]
                 const nextIndex = nextNode?.start || (arg.end - 1)
 
                 s.remove(property.start, nextIndex)
